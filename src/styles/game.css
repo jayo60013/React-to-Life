@@ -1,0 +1,12 @@
+.body {
+  display: flex;
+}
+
+.controlPanel {
+  width: 100%;
+  border: red 1px solid;
+}
+
+.sliderContainer {
+  display: flex;
+}

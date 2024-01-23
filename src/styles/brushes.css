@@ -1,0 +1,10 @@
+input {
+  padding: 0.5em;
+  margin: 1em;
+  transform: scale(2);
+}
+
+label {
+  padding: 0.5em;
+  margin: 1em;
+}

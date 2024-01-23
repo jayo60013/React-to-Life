@@ -1,0 +1,14 @@
+.cell {
+  margin: 0;
+  padding: 0;
+  background: black;
+  /* border: solid rgba(255, 255, 255, 0.25) 1px; */
+}
+
+.dead {
+  background: black;
+}
+
+.alive {
+  background: white;
+}
