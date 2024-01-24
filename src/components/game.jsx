@@ -1,7 +1,9 @@
 import React, { useEffect, useState } from "react";
+import Select from 'react-select';
 import Board from './board';
 import Slider from "./slider";
 import Brushes from "./brushes";
+import { GAME_OF_LIFE, SEEDS, BRAINS_BRAIN } from "../automata";
 import '../styles/game.css';
 
 const CELL_SIZE = 10;
@@ -12,46 +14,6 @@ const ROWS = HEIGHT / CELL_SIZE;
 const COLS = WIDTH / CELL_SIZE;
 
 const DEFAULT_FPS = 15;
-
-const GAME_OF_LIFE = [
-  // When DEAD (state 0)
-  {
-    "transistions": {
-      // If 5 DEAD and 3 ALIVE then ALIVE
-      "53": 1,
-    },
-    // else dead
-    "default": 0,
-    "colour": "#fff",
-  },
-  // When ALIVE (state 1)
-  {
-    "transistions": {
-      // if 6 DEAD and 2 ALIVE
-      "62": 1,
-      // or if 5 DEAD and 3 ALIVE
-      "53": 1,
-      // then alive
-    },
-    // else dead
-    "default": 0,
-    "colour": "#000",
-  },
-];
-const SEEDS = [
-  {
-    "transistions": {
-      "62": 1,
-    },
-    "default": 0,
-    "colour": "#fff",
-  },
-  {
-    "transistions": {},
-    "default": 0,
-    "colour": "#000",
-  },
-];
 
 const countNbors = (board, states, x, y) => {
   const nbors = Array(states).fill(0);
@@ -80,25 +42,43 @@ const makeBoard = (rows, cols) => {
   return Array.from({ length: rows }, () => Array(cols).fill(0));
 };
 
-const brushOptions = [
-  { value: 1, label: 'Alive' },
-  { value: 0, label: 'Dead' },
-]
+const automataOptions = [
+  { value: GAME_OF_LIFE, label: 'Game of Life' },
+  { value: SEEDS, label: 'Seeds' },
+  { value: BRAINS_BRAIN, label: 'Brain\'s Brain' },
+];
 
 const Game = () => {
   const [board, setBoard] = useState(makeBoard(ROWS, COLS));
   const [next, setNext] = useState(makeBoard(ROWS, COLS));
   const [fps, setFPS] = useState(DEFAULT_FPS);
   const [isPlaying, setPlaying] = useState(false);
-  const [selectedBrush, setBrush] = useState(1);
+  const [brushOptions, setBrushOptions] = useState(
+    GAME_OF_LIFE.map((item, index) => {
+      return { value: index, label: item.stateName };
+    })
+  );
+  const [selectedBrush, setBrush] = useState(0);
+  const [selectedAutomata, setAutomata] = useState(GAME_OF_LIFE);
 
   const updateBrush = (event) => {
     setBrush(parseInt(event.target.value));
   };
 
+  const updateAutomata = (option) => {
+    setAutomata(option.value);
+
+    setBrushOptions(
+      option.value.map((item, index) => {
+        return { value: index, label: item.stateName };
+      })
+    );
+  };
+
+
   const playBoard = () => {
     if (isPlaying) {
-      stepBoard(SEEDS);
+      stepBoard(selectedAutomata);
     }
   }
 
@@ -145,19 +125,33 @@ const Game = () => {
       </div>
       <div className="body">
         <div className="gameBoard">
-          <Board board={board} onCellClick={onCellClick} cellSize={CELL_SIZE} />
+          <Board
+            board={board}
+            onCellClick={onCellClick}
+            cellSize={CELL_SIZE}
+          />
         </div>
         <div className="controlPanel">
+          <Select
+            options={automataOptions}
+            defaultValue={automataOptions[0]}
+            onChange={updateAutomata}
+          />
           <Brushes
             options={brushOptions}
             selectedBrush={selectedBrush}
             onChange={updateBrush}
           />
 
-          <button className="playpause_btn" onClick={() => setPlaying(!isPlaying)}>
+          <button className="playpause_btn"
+            onClick={() => setPlaying(!isPlaying)}>
             {isPlaying ? 'Pause' : 'Play'}
           </button>
-          <button className="step_btn" onClick={stepBoard}>Step</button>
+          <button
+            className="step_btn"
+            onClick={stepBoard}>
+            Step
+          </button>
           <button
             className="clear_btn"
             onClick={

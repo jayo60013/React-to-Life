@@ -5,10 +5,14 @@
   /* border: solid rgba(255, 255, 255, 0.25) 1px; */
 }
 
-.dead {
+.state-0 {
   background: black;
 }
 
-.alive {
+.state-1 {
   background: white;
+}
+
+.state-2 {
+  background: blue;
 }
